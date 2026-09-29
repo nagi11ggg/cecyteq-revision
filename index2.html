@@ -93,8 +93,16 @@
             <h4 style="color: #047857; margin-bottom: 10px; font-weight: 700;">Publicar Nueva Tarea o Actividad</h4>
             <div class="form-row">
                 <div class="form-group">
-                    <label>Nombre de la Actividad (Ej: ACT 1, INVESTIGACIÓN):</label>
+                    <label>Nombre de la Actividad:</label>
                     <input type="text" id="inputNombreTarea" placeholder="EJ: ACT 2">
+                </div>
+                <div class="form-group" style="max-width: 160px;">
+                    <label>Fecha de Inicio:</label>
+                    <input type="date" id="inputFechaInicio">
+                </div>
+                <div class="form-group" style="max-width: 160px;">
+                    <label>Fecha de Entrega:</label>
+                    <input type="date" id="inputFechaFin">
                 </div>
                 <div>
                     <button class="btn-principal" onclick="agregarTareaGrupo()">Publicar y Agregar Columna</button>
