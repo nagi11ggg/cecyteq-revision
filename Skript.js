@@ -344,7 +344,7 @@ function editarFechasTarea(tareaId) {
 function eliminarTareaGrupo(tareaId) {
     let grupo = misGrupos.find(g => g.id === grupoActualId);
     if (grupo && grupo.bloqueado) {
-        alert("⚠️️ El grupo está bloqueado.");
+        alert("⚠️ El grupo está bloqueado.");
         return;
     }
 
@@ -615,7 +615,7 @@ function renderizarTablaAlumnos() {
             html += `<th>
                 <div style="display: flex; justify-content: space-between; align-items: center; gap: 8px;">
                     <span>ACT ${index + 1}<br><strong style="font-size: 0.85rem;">${t.nombre}</strong>${fechasHeader}</span>
-                    ${bloqueado ? '' : `<button style="background: none; border: none; cursor: pointer; font-size: 0.75rem;" onclick="editarFechasTarea('${t.id}')" title="Modificar fechas">✏️️</button>`}
+                    ${bloqueado ? '' : `<button style="background: none; border: none; cursor: pointer; font-size: 0.75rem;" onclick="editarFechasTarea('${t.id}')" title="Modificar fechas">✏</button>`}
                 </div>
             </th>`;
         });
@@ -961,7 +961,6 @@ function procesarQRScanned(codigo) {
     }
 
     try {
-        // 1. Desglosar la información que trae el código QR generado por el alumno
         let partes = codigo.split(" | ");
         let datosQR = {};
         partes.forEach(parte => {
@@ -981,19 +980,18 @@ function procesarQRScanned(codigo) {
 
         let parcialData = obtenerParcialActualObj();
         
-        // 2. Buscar al alumno por coincidencia exacta de su nombre
-        let alumno = parcialData.alumnos.find(a => a.nombre.toUpperCase() === alumnoQR.toUpperCase());
+        // CORRECCIÓN INCLUIDA: Limpieza y .toUpperCase() en ambos extremos para emparejar minúsculas del portal alumno con mayúsculas del maestro
+        let alumnoQRMinLimpio = alumnoQR.trim().toUpperCase();
+        let alumno = parcialData.alumnos.find(a => a.nombre.trim().toUpperCase() === alumnoQRMinLimpio);
 
         if (alumno) {
             if (!alumno.tareasStatus) alumno.tareasStatus = {};
             
-            // Verificar si el alumno ya tenía registrada esta tarea previamente
             if (tareaQR && alumno.tareasStatus[tareaQR] === true) {
                 alert(`⚠️ El alumno ${alumno.nombre} ya tiene registrada esta actividad previamente.`);
                 return;
             }
 
-            // Registrar la tarea y aumentar su firma automáticamente
             if (tareaQR) {
                 alumno.tareasStatus[tareaQR] = true;
             }
