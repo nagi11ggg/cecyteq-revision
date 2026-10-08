@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generador de Código QR - Alumnos CECYTEQ</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <style>
+        :root {
+            --cecyteq-green: #10b981;
+            --cecyteq-green-dark: #047857;
+            --cecyteq-orange: #f97316;
+            --cecyteq-orange-hover: #ea580c;
+            --bg-color: #f8fafc;
+            --card-bg: #ffffff;
+            --border-color: #e2e8f0;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --radius: 14px;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Poppins', sans-serif; }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .card {
+            width: 100%;
+            max-width: 480px;
+            background: var(--card-bg);
+            padding: 30px;
+            border-radius: var(--radius);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+            border: 1px solid var(--border-color);
+            border-top: 6px solid var(--cecyteq-green);
+        }
+
+        .card-header-icon {
+            text-align: center;
+            font-size: 2.2rem;
+            color: var(--cecyteq-green);
+            margin-bottom: 5px;
+        }
+
+        h2 { 
+            font-size: 1.4rem; 
+            margin-bottom: 2px; 
+            color: var(--cecyteq-green-dark); 
+            text-align: center;
+            font-weight: 700; 
+        }
+
+        .subtitle {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .form-group { margin-bottom: 16px; }
+
+        label { 
+            display: block; 
+            font-size: 0.85rem; 
+            font-weight: 600; 
+            margin-bottom: 6px; 
+            color: var(--text-main); 
+        }
+
+        input, select { 
+            width: 100%; 
+            padding: 11px 14px; 
+            border: 2px solid var(--border-color); 
+            border-radius: 10px; 
+            font-size: 0.93rem; 
+            outline: none; 
+            background: #ffffff;
+            color: var(--text-main);
+            transition: all 0.2s;
+        }
+
+        input:focus, select:focus { 
+            border-color: var(--cecyteq-green); 
+            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+        }
+
+        .label-header-flex {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 6px;
+        }
+
+        .select-parcial-mini {
+            padding: 3px 8px;
+            border: 1px solid var(--cecyteq-green);
+            border-radius: 6px;
+            font-size: 0.78rem;
+            font-weight: 700;
+            color: var(--cecyteq-green-dark);
+            background: #f0fdf4;
+            outline: none;
+            cursor: pointer;
+        }
+
+        .btn {
+            width: 100%; 
+            padding: 12px; 
+            background: linear-gradient(135deg, var(--cecyteq-orange), var(--cecyteq-orange-hover)); 
+            color: white; 
+            border: none;
+            border-radius: 10px; 
+            font-size: 1rem; 
+            font-weight: 600; 
+            cursor: pointer;
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            gap: 8px; 
+            margin-top: 15px;
+            box-shadow: 0 4px 6px rgba(249, 115, 22, 0.25);
+            transition: all 0.2s;
+        }
+
+        .btn:hover { 
+            transform: translateY(-1px);
+            background: linear-gradient(135deg, #ea580c, #c2410c); 
+        }
+
+        /* Botones extras inferiores (Tabla e IA) */
+        .bottom-actions-row {
+            display: flex;
+            gap: 10px;
+            margin-top: 12px;
+        }
+
+        .btn-secondary-action {
+            flex: 1;
+            padding: 10px;
+            border-radius: 9px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            border: 1px solid var(--border-color);
+            background: #f8fafc;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            transition: all 0.2s;
+        }
+
+        .btn-secondary-action:hover {
+            background: #e2e8f0;
+        }
+
+        .btn-ia {
+            background: #f3e8ff;
+            color: #6b21a8;
+            border-color: #e9d5ff;
+        }
+        .btn-ia:hover {
+            background: #e9d5ff;
+        }
+
+        #qrcode-box { 
+            display: none; 
+            flex-direction: column; 
+            align-items: center; 
+            margin-top: 20px; 
+            padding: 20px; 
+            background: #f0fdf4; 
+            border-radius: 12px; 
+            border: 2px dashed #a7f3d0; 
+        }
+
+        #qrcode { 
+            margin: 12px 0; 
+            padding: 12px; 
+            background: white; 
+            border-radius: 10px; 
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05); 
+        }
+
+        .btn-download { 
+            background: linear-gradient(135deg, var(--cecyteq-green), var(--cecyteq-green-dark)); 
+            box-shadow: 0 4px 6px rgba(16, 185, 129, 0.25);
+            margin-top: 10px;
+        }
+        .btn-download:hover { 
+            background: linear-gradient(135deg, #059669, #065f46); 
+        }
+
+        /* Modal para ver la tabla del alumno */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.6);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        .modal-content {
+            background: white;
+            padding: 25px;
+            border-radius: 14px;
+            width: 90%;
+            max-width: 450px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            text-align: left;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- MODAL PARA VER FIRMAS / ESTADO DE TAREAS -->
+    <div id="modalTablaAlumno" class="modal">
+        <div class="modal-content">
+            <h3 style="color: var(--cecyteq-green-dark); margin-bottom: 12px; font-weight: 700;">📋 Resumen de Mis Firmas</h3>
+            <div id="contenidoTablaAlumno" style="font-size: 0.9rem; color: var(--text-main); margin-bottom: 15px;">
+                Selecciona tu grupo y nombre primero.
+            </div>
+            <button class="btn" style="margin-top: 0; background: #64748b;" onclick="cerrarModalTabla()">Cerrar</button>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header-icon"><i class="fa-solid fa-qrcode"></i></div>
+        <h2>Generador de Código QR</h2>
+        <div class="subtitle">CECYTEQ • Plantel San Juan del Río</div>
+        
+        <div class="form-group">
+            <label for="selectDocente"><i class="fa-solid fa-chalkboard-user" style="color: var(--cecyteq-orange);"></i> Selecciona al Docente:</label>
+            <select id="selectDocente" onchange="cargarGruposDelDocente()">
+                <option value="">-- Selecciona el docente --</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="selectGrupo">Selecciona tu Grupo:</label>
+            <select id="selectGrupo" onchange="cargarAlumnosYActividades()" disabled>
+                <option value="">-- Primero selecciona un docente --</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="selectAlumno">Selecciona tu Nombre:</label>
+            <select id="selectAlumno" disabled>
+                <option value="">-- Primero selecciona tu grupo --</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <div class="label-header-flex">
+                <label for="selectActividad" style="margin-bottom: 0;">Selecciona la Actividad:</label>
+                <select id="selectParcialGen" class="select-parcial-mini" onchange="actualizarListaActividades()">
+                    <option value="1er Parcial">1er Parcial</option>
+                    <option value="2do Parcial">2do Parcial</option>
+                    <option value="3er Parcial">3er Parcial</option>
+                </select>
+            </div>
+            <select id="selectActividad" disabled>
+                <option value="">-- Selecciona actividad --</option>
+            </select>
+        </div>
+
+        <button class="btn" onclick="generateQR()">
+            <i class="fa-solid fa-bolt"></i> Generar Mi Código QR
+        </button>
+
+        <!-- Dos botones adicionales abajo -->
+        <div class="bottom-actions-row">
+            <button class="btn-secondary-action" onclick="abrirTablaAlumno()">
+                <i class="fa-solid fa-table-list" style="color: var(--cecyteq-green);"></i> Ver Tabla
+            </button>
+            <button class="btn-secondary-action btn-ia" onclick="verHistorialIA()">
+                <i class="fa-solid fa-robot"></i> Usar IA
+            </button>
+        </div>
+
+        <div id="qrcode-box">
+            <p style="font-size: 0.85rem; color: var(--cecyteq-green-dark); font-weight: 600;">¡Tu código QR está listo para revisión!</p>
+            <div id="qrcode"></div>
+            <button class="btn btn-download" onclick="downloadQR()">
+                <i class="fa-solid fa-download"></i> Descargar Imagen QR
+            </button>
+        </div>
+    </div>
+
+    <script>
+        let qrcodeInstance = null;
+        let docentesBD = [];
+        let docenteSeleccionadoObj = null;
+        let grupoSeleccionadoObj = null;
+
+        window.onload = function() {
+            docentesBD = JSON.parse(localStorage.getItem('cecyteq_docentes_bd')) || [];
+            let selectDocente = document.getElementById('selectDocente');
+
+            if (docentesBD.length === 0) {
+                selectDocente.innerHTML = '<option value="">⚠️ No hay docentes registrados</option>';
+                return;
+            }
+
+            selectDocente.innerHTML = '<option value="">-- Selecciona el docente --</option>';
+            docentesBD.forEach(d => {
+                let opt = document.createElement('option');
+                opt.value = d.user;
+                opt.textContent = d.nombre;
+                selectDocente.appendChild(opt);
+            });
+
+            let docenteActualUser = localStorage.getItem('cecyteq_docente_actual');
+            if (docenteActualUser && docentesBD.some(d => d.user === docenteActualUser)) {
+                selectDocente.value = docenteActualUser;
+                cargarGruposDelDocente();
+            }
+        };
+
+        function cargarGruposDelDocente() {
+            let userDocente = document.getElementById('selectDocente').value;
+            let selectGrupo = document.getElementById('selectGrupo');
+            let selectAlumno = document.getElementById('selectAlumno');
+            let selectActividad = document.getElementById('selectActividad');
+
+            if (!userDocente) {
+                selectGrupo.innerHTML = '<option value="">-- Primero selecciona un docente --</option>';
+                selectGrupo.disabled = true;
+                resetAlumnosYActividades();
+                docenteSeleccionadoObj = null;
+                return;
+            }
+
+            docenteSeleccionadoObj = docentesBD.find(d => d.user === userDocente);
+            if (!docenteSeleccionadoObj) return;
+
+            selectGrupo.innerHTML = '<option value="">-- Selecciona un grupo --</option>';
+            if (docenteSeleccionadoObj.grupos && docenteSeleccionadoObj.grupos.length > 0) {
+                docenteSeleccionadoObj.grupos.forEach(g => {
+                    let opt = document.createElement('option');
+                    opt.value = g.id;
+                    opt.textContent = g.nombre;
+                    selectGrupo.appendChild(opt);
+                });
+                selectGrupo.disabled = false;
+            } else {
+                selectGrupo.innerHTML = '<option value="">-- Este docente no tiene grupos --</option>';
+                selectGrupo.disabled = true;
+            }
+            resetAlumnosYActividades();
+        }
+
+        function resetAlumnosYActividades() {
+            let selectAlumno = document.getElementById('selectAlumno');
+            let selectActividad = document.getElementById('selectActividad');
+            selectAlumno.innerHTML = '<option value="">-- Primero selecciona tu grupo --</option>';
+            selectAlumno.disabled = true;
+            selectActividad.innerHTML = '<option value="">-- Selecciona actividad --</option>';
+            selectActividad.disabled = true;
+            grupoSeleccionadoObj = null;
+        }
+
+        function cargarAlumnosYActividades() {
+            let grupoId = document.getElementById('selectGrupo').value;
+            let selectAlumno = document.getElementById('selectAlumno');
+
+            if (!grupoId || !docenteSeleccionadoObj) {
+                resetAlumnosYActividades();
+                return;
+            }
+
+            grupoSeleccionadoObj = docenteSeleccionadoObj.grupos.find(g => g.id == grupoId);
+            if (!grupoSeleccionadoObj) return;
+
+            selectAlumno.innerHTML = '<option value="">-- Selecciona tu nombre --</option>';
+            if (grupoSeleccionadoObj.alumnos && grupoSeleccionadoObj.alumnos.length > 0) {
+                let alumnosOrdenados = [...grupoSeleccionadoObj.alumnos].sort((a, b) => a.nombre.localeCompare(b.nombre));
+                alumnosOrdenados.forEach(a => {
+                    let opt = document.createElement('option');
+                    opt.value = a.id;
+                    opt.textContent = a.nombre;
+                    selectAlumno.appendChild(opt);
+                });
+                selectAlumno.disabled = false;
+            } else {
+                selectAlumno.innerHTML = '<option value="">-- Este grupo no tiene alumnos registrados --</option>';
+                selectAlumno.disabled = true;
+            }
+
+            actualizarListaActividades();
+        }
+
+        function actualizarListaActividades() {
+            if (!grupoSeleccionadoObj) return;
+            let parcialKey = document.getElementById('selectParcialGen').value;
+            let selectActividad = document.getElementById('selectActividad');
+
+            selectActividad.innerHTML = '<option value="">-- Selecciona la actividad --</option>';
+            
+            if (grupoSeleccionadoObj.parciales && grupoSeleccionadoObj.parciales[parcialKey] && grupoSeleccionadoObj.parciales[parcialKey].tareas) {
+                let tareas = grupoSeleccionadoObj.parciales[parcialKey].tareas;
+                if (tareas.length > 0) {
+                    tareas.forEach((t, index) => {
+                        let opt = document.createElement('option');
+                        opt.value = t.id;
+                        opt.textContent = `ACT ${index + 1}: ${t.nombre}`;
+                        selectActividad.appendChild(opt);
+                    });
+                    selectActividad.disabled = false;
+                } else {
+                    selectActividad.innerHTML = '<option value="">-- No hay actividades en este parcial --</option>';
+                    selectActividad.disabled = true;
+                }
+            } else {
+                selectActividad.disabled = true;
+            }
+        }
+
+        function abrirTablaAlumno() {
+            if (!grupoSeleccionadoObj) {
+                alert("⚠️ Selecciona un docente, grupo y tu nombre primero.");
+                return;
+            }
+            let alumnoId = document.getElementById('selectAlumno').value;
+            if (!alumnoId) {
+                alert("⚠️ Por favor selecciona tu nombre en la lista.");
+                return;
+            }
+
+            let alumnoObj = grupoSeleccionadoObj.alumnos.find(a => a.id == alumnoId);
+            let parcialKey = document.getElementById('selectParcialGen').value;
+            let parcialData = grupoSeleccionadoObj.parciales[parcialKey] || {};
+            let calificaciones = parcialData.calificaciones || {};
+            let califAlumno = calificaciones[alumnoId] || { firmas: 0, examen: 0, tareasStatus: {}, califFinal: 0 };
+
+            let html = `<p><b>Alumno:</b> ${alumnoObj.nombre}</p>`;
+            html += `<p><b>Parcial:</b> ${parcialKey}</p>`;
+            html += `<p><b>Total de Firmas:</b> ${califAlumno.firmas}</p>`;
+            html += `<p><b>Calificación Preliminar:</b> ${califAlumno.califFinal || 0}</p>`;
+            html += `<hr style="margin: 10px 0; border: 0; border-top: 1px solid var(--border-color);">`;
+            html += `<p style="font-weight: 600; margin-bottom: 6px;">Estatus de Actividades:</p>`;
+
+            if (parcialData.tareas && parcialData.tareas.length > 0) {
+                html += `<ul style="padding-left: 18px;">`;
+                parcialData.tareas.forEach((t, idx) => {
+                    let entregado = califAlumno.tareasStatus && califAlumno.tareasStatus[t.id];
+                    let icono = entregado ? "✅" : "❌";
+                    let estadoTxt = entregado ? "Entregada / Firmada" : "Pendiente";
+                    html += `<li style="margin-bottom: 4px;"><b>ACT ${idx + 1} (${t.nombre}):</b> ${icono} ${estadoTxt}</li>`;
+                });
+                html += `</ul>`;
+            } else {
+                html += `<p style="color: var(--text-muted);">No hay actividades publicadas en este parcial.</p>`;
+            }
+
+            document.getElementById('contenidoTablaAlumno').innerHTML = html;
+            document.getElementById('modalTablaAlumno').style.display = 'flex';
+        }
+
+        function cerrarModalTabla() {
+            document.getElementById('modalTablaAlumno').style.display = 'none';
+        }
+
+        function verHistorialIA() {
+            alert("🤖 El asistente de IA se encuentra actualmente en mantenimiento. ¡Próximamente disponible!");
+        }
+
+        function generateQR() {
+            if (!docenteSeleccionadoObj || !grupoSeleccionadoObj) {
+                alert('Por favor, selecciona el docente y el grupo.');
+                return;
+            }
+
+            let alumnoId = document.getElementById('selectAlumno').value;
+            let actividadId = document.getElementById('selectActividad').value;
+            let parcialKey = document.getElementById('selectParcialGen').value;
+
+            if (!alumnoId) {
+                alert('Por favor, selecciona tu nombre de la lista.');
+                return;
+            }
+
+            let alumnoObj = grupoSeleccionadoObj.alumnos.find(a => a.id == alumnoId);
+            if (!alumnoObj) return;
+
+            const qrData = JSON.stringify({
+                id: alumnoObj.id,
+                name: alumnoObj.nombre,
+                docenteUser: docenteSeleccionadoObj.user,
+                grupoId: grupoSeleccionadoObj.id,
+                parcial: parcialKey,
+                actividadId: actividadId,
+                timestamp: Date.now()
+            });
+
+            const qrContainer = document.getElementById('qrcode');
+            qrContainer.innerHTML = "";
+
+            qrcodeInstance = new QRCode(qrContainer, {
+                text: qrData,
+                width: 180,
+                height: 180,
+                colorDark: "#047857",
+                colorLight: "#ffffff",
+                correctLevel: QRCode.CorrectLevel.H
+            });
+
+            document.getElementById('qrcode-box').style.display = 'flex';
+        }
+
+        function downloadQR() {
+            const img = document.querySelector('#qrcode img') || document.querySelector('#qrcode canvas');
+            if(!img) return;
+            let imageUrl = img.tagName === 'CANVAS' ? img.toDataURL("image/png") : img.src;
+            const link = document.createElement('a');
+            link.href = imageUrl;
+            link.download = 'QR_Revision_CECYTEQ.png';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+    </script>
+</body>
+</html>
